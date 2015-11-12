@@ -14,36 +14,37 @@ import java.net.UnknownHostException;
 public class MainActivity extends AppCompatActivity {
     private static final int ID_NULL = -1;
     private static final String ADDR_DEFAULT = "192.168.64.208";
-    private static final int PORT_DEFAULT = 30704;
+    private static final int PORT_DEFAULT = 30718;
     private int idTouching = ID_NULL;
-    private ControlSystem controlSystem;
+    private AsyncControlSystem asyncControlSystem;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         AlertDialog.Builder alertDialog=new AlertDialog.Builder(this);
         try {
-            controlSystem = new ControlSystem(InetAddress.getByName(ADDR_DEFAULT), PORT_DEFAULT);
-        }catch (Exception e){
+            asyncControlSystem = new AsyncControlSystem(InetAddress.getByName(ADDR_DEFAULT), PORT_DEFAULT, this);
+        } catch (Exception e) {
             e.printStackTrace();
-            this.finish();
+            finish();
         }
         Button forward = (Button) findViewById(R.id.forward);
         forward.setOnTouchListener(new View.OnTouchListener() {
             // ボタンがタッチされた時のハンドラ
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     if (idTouching == ID_NULL) {
                         idTouching = R.id.forward;
                         // 前進ボタンに指がタッチした時の処理を記述
+                        asyncControlSystem.instructForward();
                         Log.v("OnTouch", "Fwd Touch Down");
                     }
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     if (idTouching == R.id.forward) {
                         idTouching = ID_NULL;
                         // タッチした指が離れた時の処理を記述
+                        asyncControlSystem.stopOperation();
                         Log.v("OnTouch", "Fwd Touch Up");
                     }
                 }
@@ -55,13 +56,11 @@ public class MainActivity extends AppCompatActivity {
             // ボタンがタッチされた時のハンドラ
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     if (idTouching == ID_NULL) {
                         idTouching = R.id.backward;
-
                         // 指がタッチした時の処理を記述
-
+                        asyncControlSystem.instructBackward();
                         Log.v("OnTouch", "Bwd Touch Down");
                     }
 
@@ -69,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
                     if (idTouching == R.id.backward) {
                         idTouching = ID_NULL;
                         // タッチした指が離れた時の処理を記述
+                        asyncControlSystem.stopOperation();
                         Log.v("OnTouch", "Bwd Touch Up");
                     }
 
@@ -81,18 +81,18 @@ public class MainActivity extends AppCompatActivity {
             // ボタンがタッチされた時のハンドラ
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     if (idTouching == ID_NULL) {
                         idTouching = R.id.rotationLeft;
                         // 指がタッチした時の処理を記述
-
+                        asyncControlSystem.instructRotationLeft();
                         Log.v("OnTouch", "RLft Touch Down");
                     }
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     if (idTouching == R.id.rotationLeft) {
                         idTouching = ID_NULL;
                         // タッチした指が離れた時の処理を記述
+                        asyncControlSystem.stopOperation();
                         Log.v("OnTouch", "RLft Touch Up");
                     }
 
@@ -105,21 +105,20 @@ public class MainActivity extends AppCompatActivity {
             // ボタンがタッチされた時のハンドラ
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     if (idTouching == ID_NULL) {
                         idTouching = R.id.rotationRight;
                         // 指がタッチした時の処理を記述
-
+                        asyncControlSystem.instructRotationRight();
                         Log.v("OnTouch", "RRit Touch Down");
                     }
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
                     if (idTouching == R.id.rotationRight) {
                         idTouching = ID_NULL;
                         // タッチした指が離れた時の処理を記述
+                        asyncControlSystem.stopOperation();
                         Log.v("OnTouch", "RRit Touch Up");
                     }
-
                 }
                 return false;
             }
@@ -129,27 +128,17 @@ public class MainActivity extends AppCompatActivity {
             // ボタンがタッチされた時のハンドラ
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    if (idTouching == ID_NULL) {
-                        idTouching = R.id.led;
-                        // 指がタッチした時の処理を記述
-
-                        Log.v("OnTouch", "LED Touch Down");
-                    }
+                    // 指がタッチした時の処理を記述
+                    asyncControlSystem.instructLEDOn();
+                    Log.v("OnTouch", "LED Touch Down");
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {
-                    if (idTouching == R.id.led) {
-                        idTouching = ID_NULL;
-                        // タッチした指が離れた時の処理を記述
-                        Log.v("OnTouch", "LED Touch Up");
-                    }
-
+                    // タッチした指が離れた時の処理を記述
+                    asyncControlSystem.instructLEDOff();
+                    Log.v("OnTouch", "LED Touch Up");
                 }
                 return false;
             }
         });
-
     }
-
-
 }
