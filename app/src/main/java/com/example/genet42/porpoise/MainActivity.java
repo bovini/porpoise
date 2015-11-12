@@ -8,14 +8,26 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 public class MainActivity extends AppCompatActivity {
     private static final int ID_NULL = -1;
+    private static final String ADDR_DEFAULT = "192.168.64.208";
+    private static final int PORT_DEFAULT = 30704;
     private int idTouching = ID_NULL;
+    private ControlSystem controlSystem;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         AlertDialog.Builder alertDialog=new AlertDialog.Builder(this);
+        try {
+            controlSystem = new ControlSystem(InetAddress.getByName(ADDR_DEFAULT), PORT_DEFAULT);
+        }catch (Exception e){
+            e.printStackTrace();
+            this.finish();
+        }
         Button forward = (Button) findViewById(R.id.forward);
         forward.setOnTouchListener(new View.OnTouchListener() {
             // ボタンがタッチされた時のハンドラ
@@ -25,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     if (idTouching == ID_NULL) {
                         idTouching = R.id.forward;
-                        // 指がタッチした時の処理を記述
+                        // 前進ボタンに指がタッチした時の処理を記述
                         Log.v("OnTouch", "Fwd Touch Down");
                     }
                 } else if (event.getAction() == MotionEvent.ACTION_UP) {

@@ -131,15 +131,15 @@ public class ControlSystem {
      * @throws IOException 接続時にエラーが発生した場合
      */
     public void instructLEDOn() throws IOException {
-        try (Socket socket = new Socket(address, port)) {
-            // 指示を作成
-            WiPortCommand cmd = new WiPortCommand();
-            cmd.setActive(Instruction.LED.numberCP);
-            // 指示を送信
-            cmd.writeTo(socket.getOutputStream());
-            // 返信を確認
-            cmd.checkReply(socket.getInputStream());
-        }
+
+        Socket socket = new Socket(address, port);
+        // 指示を作成
+        WiPortCommand cmd = new WiPortCommand();
+        cmd.setActive(Instruction.LED.numberCP);
+        // 指示を送信
+        cmd.writeTo(socket.getOutputStream());
+        // 返信を確認
+        cmd.checkReply(socket.getInputStream());
     }
 
     /**
@@ -148,15 +148,15 @@ public class ControlSystem {
      * @throws IOException 接続時にエラーが発生した場合
      */
     public void instructLEDOff() throws IOException {
-        try (Socket socket = new Socket(address, port)) {
-            // 指示を作成
-            WiPortCommand cmd = new WiPortCommand();
-            cmd.setInactive(Instruction.LED.numberCP);
-            // 指示を送信
-            cmd.writeTo(socket.getOutputStream());
-            // 返信を確認
-            cmd.checkReply(socket.getInputStream());
-        }
+        Socket socket = new Socket(address, port);
+        // 指示を作成
+        WiPortCommand cmd = new WiPortCommand();
+        cmd.setInactive(Instruction.LED.numberCP);
+        // 指示を送信
+        cmd.writeTo(socket.getOutputStream());
+        // 返信を確認
+        cmd.checkReply(socket.getInputStream());
+        socket.close();
     }
 
     /**
@@ -175,14 +175,13 @@ public class ControlSystem {
      * @throws IOException 接続時にエラーが発生した場合
      */
     private void instructBehaviorally(Instruction instruction) throws IOException {
-        try (Socket socket = new Socket(address, port)) {
-            // 指示を作成
-            WiPortCommand cmd = createBehavioralCommand(instruction);
-            // 指示を送信
-            cmd.writeTo(socket.getOutputStream());
-            // 返信を確認
-            cmd.checkReply(socket.getInputStream());
-        }
+        Socket socket = new Socket(address, port);
+        // 指示を作成
+        WiPortCommand cmd = createBehavioralCommand(instruction);
+        // 指示を送信
+        cmd.writeTo(socket.getOutputStream());
+        // 返信を確認
+        cmd.checkReply(socket.getInputStream());
     }
 
     /**
