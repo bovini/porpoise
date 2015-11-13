@@ -12,7 +12,6 @@ import java.net.Socket;
  * Created by genet42 on 2015/11/12.
  */
 public class AsyncControlSystem {
-
     /**
      * 制御指示システム
      */
@@ -28,19 +27,14 @@ public class AsyncControlSystem {
      *
      * @param address IPアドレス.
      * @param port ポート番号.
+     * @param activity 何かあったときに Activity#finish() するためのアクティビティ
      */
     public AsyncControlSystem(final InetAddress address, final int port, final Activity activity) {
         this.activity = activity;
-        new AsyncTask<Void, Void, Void>() {
+        new AsyncInstructionTask(activity) {
             @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    controlSystem = new ControlSystem(address, port);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    activity.finish();
-                }
-                return null;
+            protected void instruct() throws IOException {
+                controlSystem = new ControlSystem(address, port);
             }
         }.execute();
     }
@@ -50,16 +44,10 @@ public class AsyncControlSystem {
      *
      */
     public void instructForward() {
-        new AsyncTask<Void, Void, Void>() {
+        new AsyncInstructionTask(activity) {
             @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    controlSystem.instructForward();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    activity.finish();
-                }
-                return null;
+            protected void instruct() throws IOException {
+                controlSystem.instructForward();
             }
         }.execute();
     }
@@ -69,16 +57,10 @@ public class AsyncControlSystem {
      *
      */
     public void instructBackward() {
-        new AsyncTask<Void, Void, Void>() {
+        new AsyncInstructionTask(activity) {
             @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    controlSystem.instructBackward();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    activity.finish();
-                }
-                return null;
+            protected void instruct() throws IOException {
+                controlSystem.instructBackward();
             }
         }.execute();
     }
@@ -88,16 +70,10 @@ public class AsyncControlSystem {
      *
      */
     public void instructRotationRight() {
-        new AsyncTask<Void, Void, Void>() {
+        new AsyncInstructionTask(activity) {
             @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    controlSystem.instructRotationRight();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    activity.finish();
-                }
-                return null;
+            protected void instruct() throws IOException {
+                controlSystem.instructRotationRight();
             }
         }.execute();
     }
@@ -107,16 +83,10 @@ public class AsyncControlSystem {
      *
      */
     public void instructRotationLeft() {
-        new AsyncTask<Void, Void, Void>() {
+        new AsyncInstructionTask(activity) {
             @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    controlSystem.instructRotationLeft();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    activity.finish();
-                }
-                return null;
+            protected void instruct() throws IOException {
+                controlSystem.instructRotationLeft();
             }
         }.execute();
     }
@@ -126,16 +96,10 @@ public class AsyncControlSystem {
      *
      */
     public void instructLEDOn() {
-        new AsyncTask<Void, Void, Void>() {
+        new AsyncInstructionTask(activity) {
             @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    controlSystem.instructLEDOn();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    activity.finish();
-                }
-                return null;
+            protected void instruct() throws IOException {
+                controlSystem.instructLEDOn();
             }
         }.execute();
     }
@@ -145,16 +109,10 @@ public class AsyncControlSystem {
      *
      */
     public void instructLEDOff() {
-        new AsyncTask<Void, Void, Void>() {
+        new AsyncInstructionTask(activity) {
             @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    controlSystem.instructLEDOff();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    activity.finish();
-                }
-                return null;
+            protected void instruct() throws IOException {
+                controlSystem.instructLEDOff();
             }
         }.execute();
     }
@@ -164,18 +122,11 @@ public class AsyncControlSystem {
      *
      */
     public void stopOperation() {
-        new AsyncTask<Void, Void, Void>() {
+        new AsyncInstructionTask(activity) {
             @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    controlSystem.stopOperation();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    activity.finish();
-                }
-                return null;
+            protected void instruct() throws IOException {
+                controlSystem.stopOperation();
             }
         }.execute();
     }
-
 }
