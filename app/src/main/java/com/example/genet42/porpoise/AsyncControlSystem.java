@@ -29,12 +29,28 @@ public class AsyncControlSystem {
      * @param port ポート番号.
      * @param activity 何かあったときに Activity#finish() するためのアクティビティ
      */
-    public AsyncControlSystem(final InetAddress address, final int port, final Activity activity) {
+    public AsyncControlSystem(InetAddress address, int port, Activity activity) {
+        this(address, port, activity, true);
+    }
+
+    /**
+     * WiPortのIPアドレスとリモートアドレスを指定して制御指示システムを作成する.
+     *
+     * @param address IPアドレス.
+     * @param port ポート番号.
+     * @param activity 何かあったときに Activity#finish() するためのアクティビティ
+     * @param forceTCP true ならTCPを強制する
+     */
+    public AsyncControlSystem(final InetAddress address, final int port, final Activity activity, final boolean forceTCP) {
         this.activity = activity;
         new AsyncInstructionTask(activity) {
             @Override
             protected void instruct() throws IOException {
-                controlSystem = new ControlSystem(address, port);
+                if (forceTCP) {
+                    controlSystem = new TCPControlSystem(address, port);
+                } else {
+                    controlSystem = new UDPControlSystem(address, port);
+                }
             }
         }.execute();
     }
@@ -113,6 +129,32 @@ public class AsyncControlSystem {
             @Override
             protected void instruct() throws IOException {
                 controlSystem.instructLEDOff();
+            }
+        }.execute();
+    }
+
+    /**
+     * 聴音機のLEDの点灯を指示する．
+     *
+     */
+    public void instructTestLEDOn() {
+        new AsyncInstructionTask(activity) {
+            @Override
+            protected void instruct() throws IOException {
+                controlSystem.instructTestLEDOn();
+            }
+        }.execute();
+    }
+
+    /**
+     * 聴音機のLEDの消灯を指示する．
+     *
+     */
+    public void instructTestLEDOff() {
+        new AsyncInstructionTask(activity) {
+            @Override
+            protected void instruct() throws IOException {
+                controlSystem.instructTestLEDOff();
             }
         }.execute();
     }

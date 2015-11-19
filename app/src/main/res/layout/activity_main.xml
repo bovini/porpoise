@@ -12,14 +12,16 @@
         android:id="@+id/backward"
         android:layout_marginTop="92dp"
         android:layout_below="@+id/forward"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:text="Backward" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/forward"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:text="Forward" />
 
     <Button
         android:layout_width="wrap_content"
@@ -28,7 +30,8 @@
         android:layout_marginTop="26dp"
         android:layout_below="@+id/forward"
         android:layout_toLeftOf="@+id/backward"
-        android:layout_toStartOf="@+id/backward" />
+        android:layout_toStartOf="@+id/backward"
+        android:text="Left" />
 
     <Button
         android:layout_width="wrap_content"
@@ -36,12 +39,13 @@
         android:id="@+id/rotationRight"
         android:layout_alignTop="@+id/rotationLeft"
         android:layout_toRightOf="@+id/forward"
-        android:layout_toEndOf="@+id/forward" />
+        android:layout_toEndOf="@+id/forward"
+        android:text="Right" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Lockon"
+        android:text="Record"
         android:id="@+id/Recording"
         android:layout_alignParentBottom="true"
         android:layout_toRightOf="@+id/backward"
@@ -56,4 +60,12 @@
         android:layout_alignTop="@+id/Recording"
         android:layout_toLeftOf="@+id/backward"
         android:layout_toStartOf="@+id/backward" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Test"
+        android:id="@+id/testLED"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

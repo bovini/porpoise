@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * WiPortのCPの状態設定用ポート番号の規定値
      */
-    private static final int PORT_DEFAULT = 30718;
+    private static final int PORT_DEFAULT = 30704;
 
     /**
      * 非同期版 制御指示システム
@@ -112,6 +112,21 @@ public class MainActivity extends AppCompatActivity {
             protected void onTouchUp() {
                 asyncControlSystem.instructLEDOff();
                 Log.v("OnTouch", "LED Touch Up");
+            }
+        });
+
+        Button testLED = (Button) findViewById(R.id.testLED);
+        testLED.setOnTouchListener(new ButtonListener() {
+            @Override
+            protected void onTouchDown() {
+                asyncControlSystem.instructTestLEDOn();
+                Log.v("OnTouch", "TestLED Touch Down");
+            }
+
+            @Override
+            protected void onTouchUp() {
+                asyncControlSystem.instructTestLEDOff();
+                Log.v("OnTouch", "TestLED Touch Up");
             }
         });
     }

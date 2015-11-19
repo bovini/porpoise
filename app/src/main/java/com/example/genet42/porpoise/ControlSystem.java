@@ -2,23 +2,11 @@ package com.example.genet42.porpoise;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.Socket;
 
 /**
  * 制御指示システム
  */
-public class ControlSystem {
-
-    /**
-     * WiPortのIPアドレス．
-     */
-    private InetAddress address;
-
-    /**
-     * WiPortのポート番号．
-     */
-    private int port;
-
+public abstract class ControlSystem {
     /**
      * 制御指示
      */
@@ -46,7 +34,13 @@ public class ControlSystem {
         /**
          * LED点灯
          */
-        LED(0);
+        LED(0),
+
+        /**
+         * テスト用LED点灯
+         */
+        TEST_LED(8),
+        ;
 
         /**
          * CP番号
@@ -68,23 +62,17 @@ public class ControlSystem {
          *
          * @param number CP番号
          */
-        private Instruction(int number) {
+        Instruction(int number) {
             this.numberCP = number;
         }
     }
 
     /**
-     * WiPortのIPアドレスとリモートアドレスを指定して制御指示システムを作成する.
+     * 指示を初期状態にする.
      *
-     * @param address IPアドレス.
-     * @param port ポート番号.
      * @throws IOException 接続時にエラーが発生した場合
      */
-    public ControlSystem(InetAddress address, int port) throws IOException {
-        this.address = address;
-        this.port = port;
-
-        // reset
+    protected void reset() throws IOException {
         instructLEDOff();
         stopOperation();
     }
@@ -131,15 +119,7 @@ public class ControlSystem {
      * @throws IOException 接続時にエラーが発生した場合
      */
     public void instructLEDOn() throws IOException {
-
-        Socket socket = new Socket(address, port);
-        // 指示を作成
-        WiPortCommand cmd = new WiPortCommand();
-        cmd.setActive(Instruction.LED.numberCP);
-        // 指示を送信
-        cmd.writeTo(socket.getOutputStream());
-        // 返信を確認
-        cmd.checkReply(socket.getInputStream());
+        instructActive(Instruction.LED);
     }
 
     /**
@@ -148,15 +128,25 @@ public class ControlSystem {
      * @throws IOException 接続時にエラーが発生した場合
      */
     public void instructLEDOff() throws IOException {
-        Socket socket = new Socket(address, port);
-        // 指示を作成
-        WiPortCommand cmd = new WiPortCommand();
-        cmd.setInactive(Instruction.LED.numberCP);
-        // 指示を送信
-        cmd.writeTo(socket.getOutputStream());
-        // 返信を確認
-        cmd.checkReply(socket.getInputStream());
-        socket.close();
+        instructInactive(Instruction.LED);
+    }
+
+    /**
+     * 聴音機のテスト用LEDの点灯を指示する．
+     *
+     * @throws IOException 接続時にエラーが発生した場合
+     */
+    public void instructTestLEDOn() throws IOException {
+        instructActive(Instruction.TEST_LED);
+    }
+
+    /**
+     * 聴音機のテスト用LEDの消灯を指示する．
+     *
+     * @throws IOException 接続時にエラーが発生した場合
+     */
+    public void instructTestLEDOff() throws IOException {
+        instructInactive(Instruction.TEST_LED);
     }
 
     /**
@@ -175,14 +165,47 @@ public class ControlSystem {
      * @throws IOException 接続時にエラーが発生した場合
      */
     private void instructBehaviorally(Instruction instruction) throws IOException {
-        Socket socket = new Socket(address, port);
         // 指示を作成
         WiPortCommand cmd = createBehavioralCommand(instruction);
-        // 指示を送信
-        cmd.writeTo(socket.getOutputStream());
-        // 返信を確認
-        cmd.checkReply(socket.getInputStream());
+        // 指示を実行
+        invoke(cmd);
     }
+
+    /**
+     * 動作の有効化を指示する．
+     *
+     * @param instruction 有効にする制御指示
+     * @throws IOException 接続時にエラーが発生した場合
+     */
+    private void instructActive(Instruction instruction) throws IOException {
+        // 指示を作成
+        WiPortCommand cmd = new WiPortCommand();
+        cmd.setActive(instruction.numberCP);
+        // 指示を実行
+        invoke(cmd);
+    }
+
+    /**
+     * 動作の無効化を指示する．
+     *
+     * @param instruction 無効にする制御指示
+     * @throws IOException 接続時にエラーが発生した場合
+     */
+    private void instructInactive(Instruction instruction) throws IOException {
+        // 指示を作成
+        WiPortCommand cmd = new WiPortCommand();
+        cmd.setInactive(instruction.numberCP);
+        // 指示を実行
+        invoke(cmd);
+    }
+
+    /**
+     * 指示を実行する．
+     *
+     * @param cmd 制御指示
+     * @throws IOException 接続時にエラーが発生した場合
+     */
+    protected abstract void invoke(WiPortCommand cmd) throws IOException;
 
     /**
      * 指定された制御指示を有効化するための指示を作成する．

@@ -1,8 +1,6 @@
 package com.example.genet42.porpoise;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
  * WiPortのCPに対するSet current statesのためのデータ生成器
@@ -71,32 +69,32 @@ public class WiPortCommand {
     }
 
     /**
-     * この指示を与えられたOutputStreamに書き込む．
+     * この指示を与えられたSenderに書き込む．
      *
-     * @param out 書き込み先
+     * @param sender 書き込み先
      * @throws IOException 入出力エラーが発生した場合
      */
-    public void writeTo(OutputStream out) throws IOException {
+    public void sendTo(Sender sender) throws IOException {
         byte[] data = new byte[LENGTH_DATA];
         data[0] = COMMAND;
         for (int i = 0; i < LENGTH_PARAMETER; i++) {
             data[1 + i] = mask[i];
             data[1 + LENGTH_PARAMETER + i] = states[i];
         }
-        out.write(data);
+        sender.send(data);
     }
 
     /**
-     * 与えられたInputStreamから値を読み込み，
+     * 与えられたReceiverから値を読み込み，
      * これ返信と見なして妥当性を判定する．
      *
-     * @param in 読み込み元
+     * @param receiver 読み込み元
      * @throws IOException 入出力エラーが発生した場合，および返信が妥当でない場合．
      */
-    public void checkReply(InputStream in) throws IOException {
+    public void checkReply(Receiver receiver) throws IOException {
         // 読む
         byte[] reply = new byte[LENGTH_REPLY];
-        int length_reply = in.read(reply);
+        int length_reply = receiver.receive(reply);
         // 確認
         if (length_reply != LENGTH_REPLY) {
             throw new IOException("Invalid length of reply: " + length_reply);
