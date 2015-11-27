@@ -1,7 +1,6 @@
 package com.example.genet42.porpoise;
 
 import java.io.IOException;
-import java.net.InetAddress;
 
 /**
  * 制御指示システム

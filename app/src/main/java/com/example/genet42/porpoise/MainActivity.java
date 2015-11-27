@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
      * 非同期版 制御指示システム
      */
     private AsyncControlSystem asyncControlSystem;
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,26 +38,34 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
             finish();
         }
-        AsyncControlSystem.OnErrorListener onErrorListener = new AsyncControlSystem.OnErrorListener() {
+        AsyncControlSystem.InstructionListener listener = new AsyncControlSystem.InstructionListener() {
+            @Override
+            public void onCompletion() {
+                setTitle("Porpoise");
+                Log.i("Connection", "Completed");
+            }
+
             @Override
             public void onError() {
-
+                setTitle("Porpoise (Error)");
+                Log.i("Connection", "Failed");
             }
         };
-        asyncControlSystem = new AsyncControlSystem(host, PORT_DEFAULT, onErrorListener);
+        asyncControlSystem = new AsyncControlSystem(host, PORT_DEFAULT);
+        asyncControlSystem.setInstructionListener(listener);
 
         Button forward = (Button) findViewById(R.id.forward);
         forward.setOnTouchListener(new BehavioralButtonListener(R.id.forward) {
             @Override
             protected void onTouchDown() {
                 asyncControlSystem.instructForward();
-                Log.v("OnTouch", "Fwd Touch Down");
+                Log.i("OnTouch", "Fwd Touch Down");
             }
 
             @Override
             protected void onTouchUp() {
                 asyncControlSystem.stopOperation();
-                Log.v("OnTouch", "Fwd Touch Up");
+                Log.i("OnTouch", "Fwd Touch Up");
             }
         });
 
@@ -66,13 +74,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void onTouchDown() {
                 asyncControlSystem.instructBackward();
-                Log.v("OnTouch", "Bwd Touch Down");
+                Log.i("OnTouch", "Bwd Touch Down");
             }
 
             @Override
             protected void onTouchUp() {
                 asyncControlSystem.stopOperation();
-                Log.v("OnTouch", "Bwd Touch Up");
+                Log.i("OnTouch", "Bwd Touch Up");
             }
         });
 
@@ -81,13 +89,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void onTouchDown() {
                 asyncControlSystem.instructRotationLeft();
-                Log.v("OnTouch", "RLft Touch Down");
+                Log.i("OnTouch", "RLft Touch Down");
             }
 
             @Override
             protected void onTouchUp() {
                 asyncControlSystem.stopOperation();
-                Log.v("OnTouch", "RLft Touch Up");
+                Log.i("OnTouch", "RLft Touch Up");
             }
         });
 
@@ -96,13 +104,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void onTouchDown() {
                 asyncControlSystem.instructRotationRight();
-                Log.v("OnTouch", "RRit Touch Down");
+                Log.i("OnTouch", "RRit Touch Down");
             }
 
             @Override
             protected void onTouchUp() {
                 asyncControlSystem.stopOperation();
-                Log.v("OnTouch", "RRit Touch Up");
+                Log.i("OnTouch", "RRit Touch Up");
             }
         });
 
@@ -111,13 +119,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void onTouchDown() {
                 asyncControlSystem.instructLEDOn();
-                Log.v("OnTouch", "LED Touch Down");
+                Log.i("OnTouch", "LED Touch Down");
             }
 
             @Override
             protected void onTouchUp() {
                 asyncControlSystem.instructLEDOff();
-                Log.v("OnTouch", "LED Touch Up");
+                Log.i("OnTouch", "LED Touch Up");
             }
         });
 
@@ -126,13 +134,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void onTouchDown() {
                 asyncControlSystem.instructTestLEDOn();
-                Log.v("OnTouch", "TestLED Touch Down");
+                Log.i("OnTouch", "TestLED Touch Down");
             }
 
             @Override
             protected void onTouchUp() {
                 asyncControlSystem.instructTestLEDOff();
-                Log.v("OnTouch", "TestLED Touch Up");
+                Log.i("OnTouch", "TestLED Touch Up");
             }
         });
     }
