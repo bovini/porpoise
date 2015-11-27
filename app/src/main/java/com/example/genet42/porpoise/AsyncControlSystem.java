@@ -29,6 +29,12 @@ public class AsyncControlSystem {
     private ControlSystem controlSystem;
 
     /**
+     * The specified timeout, in milliseconds.
+     * The timeout must be > 0. A timeout of zero is interpreted as an infinite timeout.
+     */
+    private int timeout = 0;
+
+    /**
      * Interface definition for a callback to be invoked when the instruction has completed
      * or there has been an error during an operation.
      */
@@ -89,8 +95,23 @@ public class AsyncControlSystem {
             }
         };
         executeWithListener(task);
-        // ちゃんと生成されていたら true
-        return controlSystem != null;
+        // 通信のタイムアウトを設定
+        if (controlSystem != null) {
+            controlSystem.setTimeout(timeout);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Enable/disable the timeout of a connection with the specified timeout, in milliseconds.
+     * The option must be enabled prior to entering the blocking operation to have effect.
+     * The timeout must be > 0. A timeout of zero is interpreted as an infinite timeout.
+     *
+     * @param timeout the specified timeout, in milliseconds.
+     */
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
     }
 
     /**

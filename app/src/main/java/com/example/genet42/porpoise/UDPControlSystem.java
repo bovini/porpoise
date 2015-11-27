@@ -1,12 +1,10 @@
 package com.example.genet42.porpoise;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 
 /**
  * TCP通信を用いる制御指示システム
@@ -30,7 +28,7 @@ public class UDPControlSystem extends ControlSystem {
     }
 
     @Override
-    protected void invoke(final WiPortCommand cmd) throws IOException {
+    protected void invoke(final WiPortCommand cmd, int timeout) throws IOException {
         // Sender 作成
         final DatagramSocket socketSender = new DatagramSocket();
         Sender sender = new Sender() {

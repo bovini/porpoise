@@ -78,9 +78,13 @@ public abstract class AsyncInstructionTask extends AsyncTask<Void, Void, Boolean
     @Override
     protected void onPostExecute(Boolean succeeded) {
         if (succeeded) {
-            onCompletionListener.onCompletion();
+            if (onCompletionListener != null) {
+                onCompletionListener.onCompletion();
+            }
         } else {
-            onErrorListener.onError();
+            if (onErrorListener != null) {
+                onErrorListener.onError();
+            }
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.example.genet42.porpoise;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -34,8 +36,9 @@ public class TCPControlSystem extends ControlSystem {
     }
 
     @Override
-    protected void invoke(WiPortCommand cmd) throws IOException {
+    protected void invoke(WiPortCommand cmd, int timeout) throws IOException {
         final Socket socket = new Socket(address, port);
+        Log.i("TCP", "sending...");
         // 指示を送信
         cmd.sendTo(new Sender() {
             @Override
@@ -43,13 +46,17 @@ public class TCPControlSystem extends ControlSystem {
                 socket.getOutputStream().write(b);
             }
         });
+        // タイムアウトを設定
+        socket.setSoTimeout(timeout);
         // 返信を確認
+        Log.i("TCP", "sent");
         cmd.checkReply(new Receiver() {
             @Override
             public int receive(byte[] b) throws IOException {
                 return socket.getInputStream().read(b);
             }
         });
+        Log.i("TCP", "received");
         socket.close();
     }
 }
