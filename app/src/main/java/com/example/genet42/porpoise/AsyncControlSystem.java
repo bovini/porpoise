@@ -1,11 +1,7 @@
 package com.example.genet42.porpoise;
 
-import android.app.Activity;
-import android.os.AsyncTask;
-
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.Socket;
 
 /**
  * 非同期版 制御指示システム
@@ -18,19 +14,21 @@ public class AsyncControlSystem {
     private ControlSystem controlSystem;
 
     /**
-     * 何かあったときに Activity#finish() するためのアクティビティ
+     * Interface definition of a callback to be invoked when there
+     * has been an error during an operation.
      */
-    private Activity activity;
+    private OnErrorListener onErrorListener;
 
     /**
-     * WiPortのIPアドレスとリモートアドレスを指定して制御指示システムを作成する.
-     *
-     * @param address IPアドレス.
-     * @param port ポート番号.
-     * @param activity 何かあったときに Activity#finish() するためのアクティビティ
+     * Interface definition of a callback to be invoked when there
+     * has been an error during an operation.
      */
-    public AsyncControlSystem(InetAddress address, int port, Activity activity) {
-        this(address, port, activity, true);
+    public interface OnErrorListener
+    {
+        /**
+         * Called to indicate an error.
+         */
+        void onError();
     }
 
     /**
@@ -38,12 +36,23 @@ public class AsyncControlSystem {
      *
      * @param address IPアドレス.
      * @param port ポート番号.
-     * @param activity 何かあったときに Activity#finish() するためのアクティビティ
+     * @param listener listener the callback that will be run
+     */
+    public AsyncControlSystem(InetAddress address, int port, OnErrorListener listener) {
+        this(address, port, listener, true);
+    }
+
+    /**
+     * WiPortのIPアドレスとリモートアドレスを指定して制御指示システムを作成する.
+     *
+     * @param address IPアドレス.
+     * @param port ポート番号.
+     * @param listener listener the callback that will be run
      * @param forceTCP true ならTCPを強制する
      */
-    public AsyncControlSystem(final InetAddress address, final int port, final Activity activity, final boolean forceTCP) {
-        this.activity = activity;
-        new AsyncInstructionTask(activity) {
+    public AsyncControlSystem(final InetAddress address, final int port, final OnErrorListener listener, final boolean forceTCP) {
+        onErrorListener = listener;
+        new AsyncInstructionTask() {
             @Override
             protected void instruct() throws IOException {
                 if (forceTCP) {
@@ -51,6 +60,11 @@ public class AsyncControlSystem {
                 } else {
                     controlSystem = new UDPControlSystem(address, port);
                 }
+            }
+            
+            @Override
+            protected void onError() {
+                onErrorListener.onError();
             }
         }.execute();
     }
@@ -60,10 +74,15 @@ public class AsyncControlSystem {
      *
      */
     public void instructForward() {
-        new AsyncInstructionTask(activity) {
+        new AsyncInstructionTask() {
             @Override
             protected void instruct() throws IOException {
                 controlSystem.instructForward();
+            }
+
+            @Override
+            protected void onError() {
+                onErrorListener.onError();
             }
         }.execute();
     }
@@ -73,10 +92,15 @@ public class AsyncControlSystem {
      *
      */
     public void instructBackward() {
-        new AsyncInstructionTask(activity) {
+        new AsyncInstructionTask() {
             @Override
             protected void instruct() throws IOException {
                 controlSystem.instructBackward();
+            }
+
+            @Override
+            protected void onError() {
+                onErrorListener.onError();
             }
         }.execute();
     }
@@ -86,10 +110,15 @@ public class AsyncControlSystem {
      *
      */
     public void instructRotationRight() {
-        new AsyncInstructionTask(activity) {
+        new AsyncInstructionTask() {
             @Override
             protected void instruct() throws IOException {
                 controlSystem.instructRotationRight();
+            }
+
+            @Override
+            protected void onError() {
+                onErrorListener.onError();
             }
         }.execute();
     }
@@ -99,10 +128,15 @@ public class AsyncControlSystem {
      *
      */
     public void instructRotationLeft() {
-        new AsyncInstructionTask(activity) {
+        new AsyncInstructionTask() {
             @Override
             protected void instruct() throws IOException {
                 controlSystem.instructRotationLeft();
+            }
+
+            @Override
+            protected void onError() {
+                onErrorListener.onError();
             }
         }.execute();
     }
@@ -112,10 +146,15 @@ public class AsyncControlSystem {
      *
      */
     public void instructLEDOn() {
-        new AsyncInstructionTask(activity) {
+        new AsyncInstructionTask() {
             @Override
             protected void instruct() throws IOException {
                 controlSystem.instructLEDOn();
+            }
+
+            @Override
+            protected void onError() {
+                onErrorListener.onError();
             }
         }.execute();
     }
@@ -125,10 +164,15 @@ public class AsyncControlSystem {
      *
      */
     public void instructLEDOff() {
-        new AsyncInstructionTask(activity) {
+        new AsyncInstructionTask() {
             @Override
             protected void instruct() throws IOException {
                 controlSystem.instructLEDOff();
+            }
+
+            @Override
+            protected void onError() {
+                onErrorListener.onError();
             }
         }.execute();
     }
@@ -138,10 +182,15 @@ public class AsyncControlSystem {
      *
      */
     public void instructTestLEDOn() {
-        new AsyncInstructionTask(activity) {
+        new AsyncInstructionTask() {
             @Override
             protected void instruct() throws IOException {
                 controlSystem.instructTestLEDOn();
+            }
+
+            @Override
+            protected void onError() {
+                onErrorListener.onError();
             }
         }.execute();
     }
@@ -151,10 +200,15 @@ public class AsyncControlSystem {
      *
      */
     public void instructTestLEDOff() {
-        new AsyncInstructionTask(activity) {
+        new AsyncInstructionTask() {
             @Override
             protected void instruct() throws IOException {
                 controlSystem.instructTestLEDOff();
+            }
+
+            @Override
+            protected void onError() {
+                onErrorListener.onError();
             }
         }.execute();
     }
@@ -164,10 +218,15 @@ public class AsyncControlSystem {
      *
      */
     public void stopOperation() {
-        new AsyncInstructionTask(activity) {
+        new AsyncInstructionTask() {
             @Override
             protected void instruct() throws IOException {
                 controlSystem.stopOperation();
+            }
+
+            @Override
+            protected void onError() {
+                onErrorListener.onError();
             }
         }.execute();
     }

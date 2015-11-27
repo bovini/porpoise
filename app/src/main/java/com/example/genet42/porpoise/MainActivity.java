@@ -38,7 +38,13 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
             finish();
         }
-        asyncControlSystem = new AsyncControlSystem(host, PORT_DEFAULT, this);
+        AsyncControlSystem.OnErrorListener onErrorListener = new AsyncControlSystem.OnErrorListener() {
+            @Override
+            public void onError() {
+
+            }
+        };
+        asyncControlSystem = new AsyncControlSystem(host, PORT_DEFAULT, onErrorListener);
 
         Button forward = (Button) findViewById(R.id.forward);
         forward.setOnTouchListener(new BehavioralButtonListener(R.id.forward) {
