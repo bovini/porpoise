@@ -1,7 +1,11 @@
 package com.example.genet42.porpoise;
 
+import android.os.AsyncTask;
+import android.os.Handler;
+
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 非同期版 制御指示システム
@@ -29,6 +33,11 @@ public class AsyncControlSystem {
     private ControlSystem controlSystem;
 
     /**
+     * ハンドラ
+     */
+    private final Handler handler = new Handler();
+
+    /**
      * The specified timeout, in milliseconds.
      * The timeout must be > 0. A timeout of zero is interpreted as an infinite timeout.
      */
@@ -38,8 +47,16 @@ public class AsyncControlSystem {
      * Interface definition for a callback to be invoked when the instruction has completed
      * or there has been an error during an operation.
      */
-    public interface InstructionListener
-            extends AsyncInstructionTask.OnCompletionListener, AsyncInstructionTask.OnErrorListener {
+    public interface InstructionListener {
+        /**
+         * Called when the instruction has completed.
+         */
+        void onCompletion();
+
+        /**
+         * Called to indicate an error.
+         */
+        void onError();
     }
 
     /**
@@ -95,17 +112,12 @@ public class AsyncControlSystem {
             }
         };
         executeWithListener(task);
-        // 通信のタイムアウトを設定
-        if (controlSystem != null) {
-            controlSystem.setTimeout(timeout);
-            return true;
-        }
-        return false;
+        return controlSystem != null;
     }
 
     /**
      * Enable/disable the timeout of a connection with the specified timeout, in milliseconds.
-     * The option must be enabled prior to entering the blocking operation to have effect.
+     * The option must be enabled prior to entering the async operation to have effect.
      * The timeout must be > 0. A timeout of zero is interpreted as an infinite timeout.
      *
      * @param timeout the specified timeout, in milliseconds.
@@ -286,13 +298,26 @@ public class AsyncControlSystem {
     }
 
     /**
-     * 非同期タスクにリスナを設定して実行する．
+     * 非同期タスクにタイムアウトを設定して実行する．
      *
-     * @param task 実行するタスク．
+     * @param task 実行するタスク
      */
-    private void executeWithListener(AsyncInstructionTask task) {
-        task.setOnCompletionListener(instructionListener);
-        task.setOnErrorListener(instructionListener);
-        task.execute();
+    private void executeWithListener(final AsyncInstructionTask task) {
+        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    boolean isSuccess = timeout > 0 ? task.get(timeout, TimeUnit.MILLISECONDS) : task.get();
+                    if (isSuccess) {
+                        instructionListener.onCompletion();
+                    } else {
+                        instructionListener.onError();
+                    }
+                } catch (Exception e) {
+                    instructionListener.onError();
+                }
+            }
+        });
     }
 }

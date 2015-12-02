@@ -7,12 +7,6 @@ import java.io.IOException;
  */
 public abstract class ControlSystem {
     /**
-     * The specified timeout, in milliseconds.
-     * The timeout must be > 0. A timeout of zero is interpreted as an infinite timeout.
-     */
-    private int timeout = 0;
-
-    /**
      * 制御指示
      */
     private enum Instruction {
@@ -80,17 +74,6 @@ public abstract class ControlSystem {
     protected void reset() throws IOException {
         instructLEDOff();
         stopOperation();
-    }
-
-    /**
-     * Enable/disable the timeout of a connection with the specified timeout, in milliseconds.
-     * The option must be enabled prior to entering the blocking operation to have effect.
-     * The timeout must be > 0. A timeout of zero is interpreted as an infinite timeout.
-     *
-     * @param timeout the specified timeout, in milliseconds.
-     */
-    public void setTimeout(int timeout) {
-        this.timeout = timeout;
     }
 
     /**
@@ -184,7 +167,7 @@ public abstract class ControlSystem {
         // 指示を作成
         WiPortCommand cmd = createBehavioralCommand(instruction);
         // 指示を実行
-        invoke(cmd, timeout);
+        invoke(cmd);
     }
 
     /**
@@ -198,7 +181,7 @@ public abstract class ControlSystem {
         WiPortCommand cmd = new WiPortCommand();
         cmd.setActive(instruction.numberCP);
         // 指示を実行
-        invoke(cmd, timeout);
+        invoke(cmd);
     }
 
     /**
@@ -212,17 +195,16 @@ public abstract class ControlSystem {
         WiPortCommand cmd = new WiPortCommand();
         cmd.setInactive(instruction.numberCP);
         // 指示を実行
-        invoke(cmd, timeout);
+        invoke(cmd);
     }
 
     /**
      * 指示を実行する．
      *
      * @param cmd 制御指示
-     * @param timeout
      * @throws IOException 接続時にエラーが発生した場合
      */
-    protected abstract void invoke(WiPortCommand cmd, int timeout) throws IOException;
+    protected abstract void invoke(WiPortCommand cmd) throws IOException;
 
     /**
      * 指定された制御指示を有効化するための指示を作成する．

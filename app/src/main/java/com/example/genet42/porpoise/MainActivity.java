@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -26,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
      * The specified timeout, in milliseconds.
      * The timeout must be > 0. A timeout of zero is interpreted as an infinite timeout.
      */
-    private static final int TIMEOUT = 100;
+    private static final int TIMEOUT = 500;
 
     /**
      * 非同期版 制御指示システム
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onError() {
                 setTitle("Porpoise [Connection Error]");
+                Toast.makeText(getApplicationContext(), "Instruction(s) failed", Toast.LENGTH_SHORT).show();
                 Log.i("Instruction", "Failed");
             }
         };
