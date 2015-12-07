@@ -68,4 +68,18 @@
         android:id="@+id/testLED"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/Recording"
+        android:layout_alignStart="@+id/Recording"
+        android:layout_alignRight="@+id/Recording"
+        android:layout_alignEnd="@+id/Recording"
+        android:indeterminate="true"
+        android:max="100"
+        android:progress="10" />
+
 </RelativeLayout>

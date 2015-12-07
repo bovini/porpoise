@@ -59,9 +59,11 @@ public class MainActivity extends AppCompatActivity {
                 Log.i("Instruction", "Failed");
             }
         };
-        asyncControlSystem = new AsyncControlSystem(host, PORT_DEFAULT);
+        asyncControlSystem = new AsyncControlSystem(host, PORT_DEFAULT, true);
         asyncControlSystem.setInstructionListener(listener);
         asyncControlSystem.setTimeout(TIMEOUT);
+
+        new UDPClient(65432).start();
 
         Button forward = (Button) findViewById(R.id.forward);
         forward.setOnTouchListener(new BehavioralButtonListener(R.id.forward) {
