@@ -1,5 +1,7 @@
 package com.example.genet42.porpoise;
 
+import android.os.AsyncTask;
+
 import java.io.IOException;
 import java.net.InetAddress;
 
@@ -7,34 +9,50 @@ import java.net.InetAddress;
  * 音声受信システム
  */
 public class SoundSystem {
-
     /**
-     * WiPortのIPアドレス．
-     */
-    private InetAddress address;
-
-    /**
-     * WiPortのポート番号．
+     * ローカルのポート番号．
      */
     private int port;
 
     /**
-     * WiPortのIPアドレスとリモートアドレスを指定して制御指示システムを作成する.
-     *
-     * @param address IPアドレス.
-     * @param port ポート番号.
-     * @throws IOException 接続時にエラーが発生した場合
+     * 音声を受信するタスク
      */
-    public SoundSystem(InetAddress address, int port) throws IOException {
-        this.address = address;
+    private AsyncReceiveTask receiveTask;
+
+    /**
+     * 音声を再生するタスク
+     */
+    private AsyncAudioPlayTask audioPlayTask;
+
+    /**
+     * true でTCPを使用する
+     */
+    private boolean forceTCP;
+
+    /**
+     * ローカルのポート番号を指定して音声受信システムを作成する.
+     *
+     * @param port ポート番号.
+     */
+    public SoundSystem(int port, boolean forceTCP) {
         this.port = port;
+        this.forceTCP = forceTCP;
     }
 
     /**
-     * 聴音機から受信される音声のバッファリングを開始する
+     * 聴音機から受信される音声の再生を開始する
      */
-    public void startBuffering() {
-
+    public void startPlaying() {
+        // 生成
+        if (forceTCP) {
+            receiveTask = new AsyncTCPReceiveTask(port);
+        } else {
+            receiveTask = new AsyncUDPReceiveTask(port);
+        }
+        audioPlayTask = new AsyncAudioPlayTask(receiveTask);
+        // 開始
+        receiveTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        audioPlayTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     /**
@@ -49,5 +67,17 @@ public class SoundSystem {
      */
     public void stopRecoding() {
 
+    }
+
+    /**
+     * 音声の受信および再生を停止する
+     */
+    public void stop() {
+        if (audioPlayTask != null) {
+            audioPlayTask.stop();
+        }
+        if (receiveTask != null) {
+            receiveTask.stop();
+        }
     }
 }

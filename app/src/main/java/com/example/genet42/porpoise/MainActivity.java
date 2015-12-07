@@ -30,6 +30,11 @@ public class MainActivity extends AppCompatActivity {
     private static final int TIMEOUT = 500;
 
     /**
+     * true だとTCPで通信する．
+     */
+    private static final boolean FORCE_TCP = true;
+
+    /**
      * 非同期版 制御指示システム
      */
     private AsyncControlSystem asyncControlSystem;
@@ -59,11 +64,11 @@ public class MainActivity extends AppCompatActivity {
                 Log.i("Instruction", "Failed");
             }
         };
-        asyncControlSystem = new AsyncControlSystem(host, PORT_DEFAULT, true);
+        asyncControlSystem = new AsyncControlSystem(host, PORT_DEFAULT, FORCE_TCP);
         asyncControlSystem.setInstructionListener(listener);
         asyncControlSystem.setTimeout(TIMEOUT);
 
-        new UDPClient(65432).start();
+        new SoundSystem(65432, FORCE_TCP).startPlaying();
 
         Button forward = (Button) findViewById(R.id.forward);
         forward.setOnTouchListener(new BehavioralButtonListener(R.id.forward) {

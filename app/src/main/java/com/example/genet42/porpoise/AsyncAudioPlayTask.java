@@ -8,14 +8,13 @@ import android.os.AsyncTask;
 /**
  * 音声を再生するための非同期タスク
  */
-public class AsyncAudioPlayTask extends AsyncTask<Void, Void, Void> {
+public class AsyncAudioPlayTask extends StoppableAsyncTask {
     public static final int SAMPLE_RATE_IN_HZ = 12000;
     public static final int TIME_BUFFERING_IN_MS = 5000;
-    private AsyncUDPReceiveTask udpReceiveTask;
-    private boolean isActive = true;
+    private AsyncReceiveTask receiveTask;
 
-    public AsyncAudioPlayTask(AsyncUDPReceiveTask udpReceiveTask) {
-        this.udpReceiveTask = udpReceiveTask;
+    public AsyncAudioPlayTask(AsyncReceiveTask receiveTask) {
+        this.receiveTask = receiveTask;
     }
 
     @Override
@@ -34,22 +33,17 @@ public class AsyncAudioPlayTask extends AsyncTask<Void, Void, Void> {
                 AudioTrack.MODE_STREAM
         );
         audioTrack.play();
-        while (isActive) {
+        while (isActive()) {
             try {
                 Thread.sleep(TIME_BUFFERING_IN_MS);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            byte[] data = udpReceiveTask.getData();
+            byte[] data = receiveTask.getData();
             if (data.length > 0) {
-//                        Log.i("UDPClient", "Audio: length: " + data.length);
                 audioTrack.write(data, 0, data.length);
             }
         }
         return null;
-    }
-
-    public void stop() {
-        isActive = false;
     }
 }

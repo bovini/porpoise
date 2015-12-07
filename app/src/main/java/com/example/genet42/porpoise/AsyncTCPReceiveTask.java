@@ -1,0 +1,50 @@
+package com.example.genet42.porpoise;
+
+import android.util.Log;
+
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+/**
+ * TCPパケットを受信する非同期タスク
+ */
+public class AsyncTCPReceiveTask extends AsyncReceiveTask {
+    private static final int SIZE_BUFFER = 65536;
+    private static final int SIZE_DATA_RECEIVE = 16;
+    private final ByteArrayRingBuffer buffer = new ByteArrayRingBuffer(SIZE_BUFFER);
+    private int port;
+
+    public AsyncTCPReceiveTask(int port) {
+        this.port = port;
+    }
+
+    @Override
+    protected Void doInBackground(Void... params) {
+        byte[] dataReceived = new byte[SIZE_DATA_RECEIVE];
+        try {
+            ServerSocket serverSocket = new ServerSocket(port);
+            while (isActive()) {
+                Log.i("AsyncTCPReceiveTask", "waiting for connection...");
+                Socket socket = serverSocket.accept();
+                Log.i("AsyncTCPReceiveTask", "connection accepted: " + socket.toString());
+                DataInputStream in = new DataInputStream(socket.getInputStream());
+                while (!socket.isClosed()) {
+                    int lengthReceived = in.read(dataReceived);
+                    Log.i("AsyncTCPReceiveTask", "received length: " + lengthReceived);
+                    buffer.offer(dataReceived, lengthReceived);
+                }
+            }
+            serverSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public byte[] getData() {
+        return buffer.pollAll();
+    }
+}

@@ -9,11 +9,10 @@ import java.net.DatagramSocket;
 /**
  * UDPデータグラムを受信する非同期タスク
  */
-public class AsyncUDPReceiveTask extends AsyncTask<Void, Void, Void> {
+public class AsyncUDPReceiveTask extends AsyncReceiveTask {
     private static final int SIZE_BUFFER = 65536;
     private static final int SIZE_DATA_RECEIVE = 16;
     private final ByteArrayRingBuffer buffer = new ByteArrayRingBuffer(SIZE_BUFFER);
-    private boolean isActive = true;
     private int port;
 
     public AsyncUDPReceiveTask(int port) {
@@ -23,30 +22,25 @@ public class AsyncUDPReceiveTask extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
         byte[] dataReceived = new byte[SIZE_DATA_RECEIVE];
-        DatagramPacket dp = new DatagramPacket(dataReceived, dataReceived.length);
-        DatagramSocket ds = null;
+        DatagramPacket packet = new DatagramPacket(dataReceived, dataReceived.length);
+        DatagramSocket socket = null;
         try {
-            ds = new DatagramSocket(port);
-            while (isActive) {
-                ds.receive(dp);
-                for (int i = 0; i < dp.getLength(); i++) {
-                    buffer.offer(dataReceived[i]);
-                }
+            socket = new DatagramSocket(port);
+            while (isActive()) {
+                socket.receive(packet);
+                buffer.offer(packet.getData());
             }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (ds != null) {
-                ds.close();
+            if (socket != null) {
+                socket.close();
             }
         }
         return null;
     }
 
-    public void stop() {
-        isActive = false;
-    }
-
+    @Override
     public byte[] getData() {
         return buffer.pollAll();
     }
