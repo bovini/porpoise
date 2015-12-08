@@ -4,6 +4,7 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.os.AsyncTask;
+import android.util.Log;
 
 /**
  * 音声を再生するための非同期タスク
@@ -24,12 +25,13 @@ public class AsyncAudioPlayTask extends StoppableAsyncTask {
                 AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_8BIT
         );
+        Log.i("AsyncAudioPlayTask", "buffer size: " + minBufferSize);
         AudioTrack audioTrack = new AudioTrack(
                 AudioManager.STREAM_MUSIC,
                 SAMPLE_RATE_IN_HZ,
                 AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_8BIT,
-                minBufferSize * 5,
+                minBufferSize * 16,
                 AudioTrack.MODE_STREAM
         );
         audioTrack.play();

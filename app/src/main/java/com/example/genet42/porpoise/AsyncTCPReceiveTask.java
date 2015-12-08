@@ -6,6 +6,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 
 /**
  * TCPパケットを受信する非同期タスク
@@ -31,9 +32,14 @@ public class AsyncTCPReceiveTask extends AsyncReceiveTask {
                 Log.i("AsyncTCPReceiveTask", "connection accepted: " + socket.toString());
                 DataInputStream in = new DataInputStream(socket.getInputStream());
                 while (!socket.isClosed()) {
-                    int lengthReceived = in.read(dataReceived);
-                    Log.i("AsyncTCPReceiveTask", "received length: " + lengthReceived);
-                    buffer.offer(dataReceived, lengthReceived);
+                    try {
+                        int lengthReceived = in.read(dataReceived);
+                        // Log.i("AsyncTCPReceiveTask", "received length: " + lengthReceived);
+                        buffer.offer(dataReceived, lengthReceived);
+                    } catch (SocketException e) {
+                        e.printStackTrace();
+                        break;
+                    }
                 }
             }
             serverSocket.close();
