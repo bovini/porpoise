@@ -43,10 +43,21 @@
         android:text="Right" />
 
     <Button
+        style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Record"
-        android:id="@+id/Recording"
+        android:text="STOP\nRECORDING"
+        android:id="@+id/stopRecording"
+        android:visibility="invisible"
+        android:layout_alignTop="@+id/startRecording"
+        android:layout_alignLeft="@+id/startRecording"
+        android:layout_alignStart="@+id/startRecording" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start\nRecording"
+        android:id="@+id/startRecording"
         android:layout_alignParentBottom="true"
         android:layout_toRightOf="@+id/backward"
         android:layout_toEndOf="@+id/backward"
@@ -57,7 +68,7 @@
         android:layout_height="wrap_content"
         android:text="LED"
         android:id="@+id/led"
-        android:layout_alignTop="@+id/Recording"
+        android:layout_alignTop="@+id/startRecording"
         android:layout_toLeftOf="@+id/backward"
         android:layout_toStartOf="@+id/backward" />
 
@@ -74,10 +85,10 @@
         android:layout_height="wrap_content"
         android:id="@+id/progressBar"
         android:layout_alignParentBottom="true"
-        android:layout_alignLeft="@+id/Recording"
-        android:layout_alignStart="@+id/Recording"
-        android:layout_alignRight="@+id/Recording"
-        android:layout_alignEnd="@+id/Recording"
+        android:layout_alignLeft="@+id/startRecording"
+        android:layout_alignStart="@+id/startRecording"
+        android:layout_alignRight="@+id/startRecording"
+        android:layout_alignEnd="@+id/startRecording"
         android:indeterminate="true"
         android:max="100"
         android:progress="10" />
